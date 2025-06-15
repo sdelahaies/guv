@@ -11,6 +11,14 @@ print("create env_list")
 script_path = str(f"{INSTALL_PATH}/get_venv.sh")    
 subprocess.run(["bash", script_path], check=True)
 
+print("create ~/.bashrc_uv")
+HOME=os.getenv("HOME")
+with open(f"{HOME}/.bashrc","r") as f:
+    bashrc=f.read()
+
+with open(f"{HOME}/.bashrc_uv","w") as f:
+    f.write(bashrc+"\n\n"+"source .venv/bin/activate"+"\n")
+
 launcher="""#!/usr/bin/env xdg-open
 [Desktop Entry]
 Version=1.0

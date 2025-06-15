@@ -8,7 +8,7 @@
 
 ## Features
 
-- List all known `.venv` environments (tracked via `env_list`)
+- List all known `.venv` environments, tracked via `env_list`
 - View:
   - Environment name and path
   - Python version
@@ -44,6 +44,7 @@ python setup.py
 This will:
 - Generate a `config.py` with the absolute install path
 - Create `env_list` using `get_venv.sh`
+- Duplicate existing `~/.bashrc` to `~/.bashrc_uv` with `source venv/bin/activate` added at the end
 - Create a `guv.desktop` launcher you can use to start the GUI, see [create launcher](https://linuxconfig.org/how-to-create-desktop-shortcut-launcher-on-ubuntu-22-04-jammy-jellyfish-linux) 
 - Make sure `get_venv.sh` exists and scans for `.venv` folders to populate `env_list`.
 
@@ -81,4 +82,4 @@ Credits
 
 
 ---
-** Collaboration is more than welcome on this project! **
+**Collaboration is more than welcome on this project!**
