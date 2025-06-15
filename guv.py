@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QTextEdit,
     QLineEdit,
+    QMessageBox
 )
 from PySide6.QtGui import QFont, QColor
 from PySide6.QtCore import Qt
@@ -76,7 +77,7 @@ class MyUVGUI(QWidget):
             # script_path = str(Path.home() / ".myuv" / "find_venv.sh")
             # script_path = str(f"{working_dir}/scripts/get_venv.sh")
             script_path = str(f"{INSTALL_PATH}/get_venv.sh")
-            subprocess.run(["bash", script_path], check=True)
+            subprocess.run(["bash", script_path], check=True,cwd=INSTALL_PATH)
         except subprocess.CalledProcessError as e:
             print(f"Error running get_venv.sh: {e}")
             return
@@ -88,6 +89,68 @@ class MyUVGUI(QWidget):
             self.add_env_item(env_path)
         pass
     
+    
+    # def delete_env(self):
+    #     item = self.list_widget.currentItem()
+    #     if not item:
+    #         return
+
+    #     env_path = Path(item.data(Qt.UserRole))
+    #     print(f"delete {env_path} ")
+    #     with open(f"{env_path.parent}/venv.txt","w") as f:
+    #         f.write(self.details_area.toPlainText())
+    #         print(self.details_area.toPlainText())
+    #     # open a confirmation window
+    #     # "your about to delete the virtual environment for"
+    #     #             f"env_path.parent.name "
+    #     # if "delete" delete env_path and close window
+    #     # if cancel close window
+
+
+    def delete_env(self):
+        item = self.list_widget.currentItem()
+        if not item:
+            return
+
+        env_path = Path(item.data(Qt.UserRole))
+        env_root = env_path.parent
+        env_name = env_root.name
+
+        # Optional: save env details to a backup text file
+        backup_file = env_root / "venv.txt"
+        with open(backup_file, "w") as f:
+            f.write(self.details_area.toPlainText())
+
+        # Confirmation dialog
+        confirm = QMessageBox.question(
+            self,
+            "Confirm Deletion",
+            f"You are about to delete the virtual environment for:\n\n{env_name}\n\nThis action cannot be undone.\n\nContinue?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel
+        )
+
+        if confirm == QMessageBox.StandardButton.Yes:
+            try:
+                shutil.rmtree(env_path)
+                print(f"Deleted: {env_path}")
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"Failed to delete: {e}")
+                return
+
+            # Remove from list widget
+            self.list_widget.takeItem(self.list_widget.row(item))
+            self.details_area.clear()
+
+            # Update ~/.myuv/env_list
+            self.envs = [p for p in self.envs if p != env_path]
+            self.write_env_list()
+
+    def write_env_list(self):
+        env_file = Path(INSTALL_PATH) / "env_list"
+        with env_file.open("w") as f:
+            for env in self.envs:
+                f.write(f"{env}\n")
+
 
 
     def init_ui(self):
@@ -98,6 +161,8 @@ class MyUVGUI(QWidget):
         toolbar = QHBoxLayout()
         self.shell_button = QPushButton("⬛ Open Shell in Env")
         self.shell_button.clicked.connect(self.open_shell_for_selected_env)
+        self.delete_button = QPushButton("🗑️ Delete")
+        self.delete_button.clicked.connect(self.delete_env)
         self.reload_button = QPushButton("🔄 Reload")
         self.reload_button.clicked.connect(self.reload_env_list)
         self.search_bar = QLineEdit()
@@ -106,6 +171,7 @@ class MyUVGUI(QWidget):
 
         toolbar.addWidget(self.shell_button)
         # toolbar.addStretch()
+        toolbar.addWidget(self.delete_button)
         toolbar.addWidget(self.reload_button)
         toolbar.addWidget(self.search_bar)
 
