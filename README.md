@@ -16,6 +16,7 @@
   - Disk size
   - Installed packages (via `uv pip list`)
 - One-click to open a terminal in the environment directory with the venv activated
+- One-click + confirmation to delete an environment, venv details saved in `venv.txt` in the project folder
 - Integrates with your terminal (supports Linux GNOME-based terminals for now)
 
 ---

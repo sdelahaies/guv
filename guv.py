@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QTextEdit,
     QLineEdit,
-    QMessageBox
+    QMessageBox,
 )
 from PySide6.QtGui import QFont, QColor
 from PySide6.QtCore import Qt
@@ -24,8 +24,6 @@ import shutil
 import datetime
 
 from config import INSTALL_PATH
-
-# working_dir=os.getcwd()
 
 
 class MyUVGUI(QWidget):
@@ -69,15 +67,13 @@ class MyUVGUI(QWidget):
                         envs.append(path)
         return envs
 
-
-
     def reload_env_list(self):
         # Run the find_venv.sh script
         try:
             # script_path = str(Path.home() / ".myuv" / "find_venv.sh")
             # script_path = str(f"{working_dir}/scripts/get_venv.sh")
             script_path = str(f"{INSTALL_PATH}/get_venv.sh")
-            subprocess.run(["bash", script_path], check=True,cwd=INSTALL_PATH)
+            subprocess.run(["bash", script_path], check=True, cwd=INSTALL_PATH)
         except subprocess.CalledProcessError as e:
             print(f"Error running get_venv.sh: {e}")
             return
@@ -88,24 +84,6 @@ class MyUVGUI(QWidget):
         for env_path in self.envs:
             self.add_env_item(env_path)
         pass
-    
-    
-    # def delete_env(self):
-    #     item = self.list_widget.currentItem()
-    #     if not item:
-    #         return
-
-    #     env_path = Path(item.data(Qt.UserRole))
-    #     print(f"delete {env_path} ")
-    #     with open(f"{env_path.parent}/venv.txt","w") as f:
-    #         f.write(self.details_area.toPlainText())
-    #         print(self.details_area.toPlainText())
-    #     # open a confirmation window
-    #     # "your about to delete the virtual environment for"
-    #     #             f"env_path.parent.name "
-    #     # if "delete" delete env_path and close window
-    #     # if cancel close window
-
 
     def delete_env(self):
         item = self.list_widget.currentItem()
@@ -126,7 +104,7 @@ class MyUVGUI(QWidget):
             self,
             "Confirm Deletion",
             f"You are about to delete the virtual environment for:\n\n{env_name}\n\nThis action cannot be undone.\n\nContinue?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.Cancel,
         )
 
         if confirm == QMessageBox.StandardButton.Yes:
@@ -150,8 +128,6 @@ class MyUVGUI(QWidget):
         with env_file.open("w") as f:
             for env in self.envs:
                 f.write(f"{env}\n")
-
-
 
     def init_ui(self):
         self.setWindowTitle("MyUV Environment Manager")
@@ -366,7 +342,7 @@ class MyUVGUI(QWidget):
 
 if __name__ == "__main__":
     import sys
-    
+
     print("\033[1;38;5;11m        __  ___   __\033[0;0m")
     print("\033[1;38;5;11m  ___ _/ / / / | / /\033[0;0m")
     print("\033[1;38;5;11m / _ `/ /_/ /| |/ / \033[0;0m")
